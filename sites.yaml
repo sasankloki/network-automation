@@ -1,42 +1,36 @@
 ---
 
 - hosts: webservers
-  
+  become: yes
+
   tasks:
-  
 
     - name: install nginx latest version
-      apt: name=nginx state=latest
-      become: yes
 
-      service: 
-        name: nginx
+      apt: update_cache=yes name=nginx state=present
+    
+    - name: start ningx server
+      service:
+        name: nginx 
         state: started
 
-    - name: ensure php related packages are installed
+    
+    - name: install php 
+
       apt: name={{item}} state=present
-      with items:
+
+      with_items:
         - php
-        - php-fpm 
+        - php-fpm   
 
-    - name: ensure ansible is running 
-      service: name=nginx state=running enable=yes
-      become: yes
+    - copy: src=./default dest=/etc/nginx/sites-available/default
 
-    - name: copy file to document root
-      copy:
-        src: ./default
-        dest: /etc/nginx/sites-available/default
+    - copy: src=index.php dest=/var/www/html/index.php
 
-    - name: copy application code to document root 
-      copy: 
-      src: ./index.php
-      dest: /var/www/html/index.php
+    - service: name=nginx state=restarted
 
-    - name: restart nginx
-      service:
-        name: nginx
-        state: restarted
+
+
 
 
 
