@@ -1,0 +1,42 @@
+---
+
+- hosts: webservers
+  
+  tasks:
+  
+
+    - name: install nginx latest version
+      apt: name=nginx state=latest
+      become: yes
+
+      service: 
+        name: nginx
+        state: started
+
+    - name: ensure php related packages are installed
+      apt: name={{item}} state=present
+      with items:
+        - php
+        - php-fpm 
+
+    - name: ensure ansible is running 
+      service: name=nginx state=running enable=yes
+      become: yes
+
+    - name: copy file to document root
+      copy:
+        src: ./default
+        dest: /etc/nginx/sites-available/default
+
+    - name: copy application code to document root 
+      copy: 
+      src: ./index.php
+      dest: /var/www/html/index.php
+
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted
+
+
+
