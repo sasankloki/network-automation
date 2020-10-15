@@ -10,9 +10,7 @@
       apt: update_cache=yes name=nginx state=present
     
     - name: start ningx server
-      service:
-        name: nginx 
-        state: started
+      service: name=nginx state=started
 
     
     - name: install php 
@@ -28,6 +26,25 @@
     - copy: src=index.php dest=/var/www/html/index.php
 
     - service: name=nginx state=restarted
+
+- hosts:  haproxy
+  become: yes
+  
+  vars:
+    haproxy_mode: http
+    haproxy_algorithm:  roundrobin
+    haproxy_backend_servers: backend_servers
+    haproxy_path: /etc/haproxy
+        
+  tasks:
+    - name: Install HAProxy (latest)
+      apt: update_cache=yes name=haproxy state=present
+    
+    - name: Copy HAProxy Configuration File 
+      template: src=haproxy.cfg dest={{ haproxy_path }}/haproxy.cfg
+        
+    - name: Start HAProxy
+      service: name=haproxy state=started
 
 
 
