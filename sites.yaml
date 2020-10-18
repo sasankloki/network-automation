@@ -7,7 +7,7 @@
 
     - name: install nginx latest version
 
-      apt: update_cache=yes name=nginx state=present
+      apt: name=nginx state=present
     
     - name: start ningx server
       service: name=nginx state=started
@@ -35,19 +35,18 @@
     haproxy_algorithm:  roundrobin
     haproxy_backend_servers: backend_servers
     haproxy_path: /etc/haproxy
+    
         
   tasks:
+
+
     - name: Install HAProxy (latest)
       apt: update_cache=yes name=haproxy state=present
     
     - name: Copy HAProxy Configuration File 
-      template: src=haproxy.cfg dest={{ haproxy_path }}/haproxy.cfg
+      template: src=haproxy.cfg.j2 dest= {{haproxy_path}}/haproxy.cfg
         
     - name: Start HAProxy
-      service: name=haproxy state=started
+      service: name=haproxy state=restarted
 
-
-
-
-
-
+    
