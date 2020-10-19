@@ -40,13 +40,25 @@
   tasks:
 
 
-    - name: Install HAProxy (latest)
+    - name: Install HAProxy
       apt: update_cache=yes name=haproxy state=present
     
     - name: Copy HAProxy Configuration File 
-      template: src=haproxy.cfg.j2 dest= {{haproxy_path}}/haproxy.cfg
+      template: src=haproxy.cfg.j2 dest={{haproxy_path}}/haproxy.cfg
         
     - name: Start HAProxy
       service: name=haproxy state=restarted
 
+    - name:  test file
+      template: 
+        src: test.sh.j2 
+        dest: $PWD/test.sh.j2
     
+    - name: rudimentary test 
+      shell: bash $PWD/test.sh.j2
+      register: result
+      
+    - debug:
+        msg: "{{result.stdout}}"
+
+  
